@@ -4,7 +4,7 @@ Prácticas de Toolshop para el path de Santex, con Playwright y agentes de GitHu
 
 ## Estructura
 
-- `e2e/toolshop/`: diez casos UI de carrito, búsqueda y autenticación.
+- `e2e/toolshop/`: nueve casos UI de carrito, búsqueda y autenticación negativa.
 - `e2e/api/`: dos casos API de búsqueda de productos.
 - `e2e/pages/`: Page Object de login compartido.
 - `e2e/carrito.spec.ts`: primer ejercicio grabado con Codegen.
@@ -22,7 +22,7 @@ npx playwright test e2e/toolshop --project=chromium --workers=1 --retries=0
 npx playwright test e2e/api --project=chromium --workers=1 --retries=0
 ```
 
-El login válido requiere `TOOLSHOP_EMAIL` y `TOOLSHOP_PASSWORD`. El negativo usa una cuenta separada mediante `TOOLSHOP_NEGATIVE_EMAIL`. Completar `.env` localmente con los valores entre comillas; la configuración lo carga automáticamente. `.env.example` es la plantilla sin credenciales. Las variables ya exportadas en la terminal tienen prioridad sobre `.env`: eliminarlas con `unset TOOLSHOP_EMAIL TOOLSHOP_PASSWORD TOOLSHOP_NEGATIVE_EMAIL` si están desactualizadas. En CI, configurar estas variables como secretos. No guardar credenciales en el código. Se requiere Node.js 22.9 o posterior para `loadEnvFile`.
+El test de login válido fue eliminado; su cobertura queda pendiente. El login negativo usa `TOOLSHOP_NEGATIVE_EMAIL` y todavía consulta `TOOLSHOP_EMAIL` y `TOOLSHOP_PASSWORD` para distinguir los datos de ambas cuentas. Completar `.env` localmente con los valores entre comillas; la configuración lo carga automáticamente. `.env.example` es la plantilla sin credenciales. Las variables ya exportadas en la terminal tienen prioridad sobre `.env`: eliminarlas con `unset TOOLSHOP_EMAIL TOOLSHOP_PASSWORD TOOLSHOP_NEGATIVE_EMAIL` si están desactualizadas. En CI, configurar estas variables como secretos. No guardar credenciales en el código. Se requiere Node.js 22.9 o posterior para `loadEnvFile`.
 
 Para consultar el reporte después de una ejecución:
 
@@ -34,4 +34,6 @@ Los reportes y capturas temporales están excluidos de Git; pueden contener dato
 
 ## Pendiente de capacitación
 
-Configurar CI, reunir las evidencias requeridas y continuar con QATES, challenge y métricas.
+CI está configurado. Queda reincorporar o acordar el reemplazo del caso de login válido para completar diez casos UI, verificar el bloqueo de merge en un repositorio que lo permita, reunir las evidencias y continuar con QATES, challenge y métricas.
+
+La suite principal actual tiene once tests: nueve UI y dos API.

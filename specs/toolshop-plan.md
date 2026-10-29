@@ -122,6 +122,8 @@ Plan de diez casos E2E, basados en la exploración de https://practicesoftwarete
 
 #### 2.1. Iniciar sesión con credenciales válidas
 
+**Estado:** pendiente de reincorporar. El test automatizado fue eliminado por solicitud del responsable de la práctica tras rechazos de acceso también reproducidos manualmente. No se confirmó la causa. Este escenario no forma parte de la suite ejecutable actual.
+
 **File:** `specs/toolshop-plan.md`
 
 **Steps:**
