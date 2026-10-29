@@ -1,0 +1,47 @@
+name: Playwright Diagnostic
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  playwright-diagnostic:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run diagnostic Playwright tests
+        run: >-
+          npx playwright test
+          e2e/toolshop/add-one-unit-to-cart.spec.ts
+          e2e/toolshop/remove-last-product.spec.ts
+          e2e/toolshop/remove-one-product.spec.ts
+          e2e/toolshop/sort-price-ascending.spec.ts
+          --project=chromium
+          --workers=1
+          --retries=0
+          --trace=on
+
+      - name: Upload Playwright diagnostics
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-diagnostic
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: warn
