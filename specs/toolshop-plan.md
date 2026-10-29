@@ -2,7 +2,7 @@
 
 ## Application Overview
 
-Plan de diez casos E2E, basados en la exploración de https://practicesoftwaretesting.com/ con e2e/seed.spec.ts como punto de partida. Ejecutar cada caso de forma independiente desde un estado limpio de navegador, sesión y carrito. Precios observados: Combination Pliers $14.15 y Pliers $12.01. El catálogo requiere pulsar Search para aplicar la consulta; los resultados de la búsqueda se comprobaron en la interfaz. La aplicación muestra 'The cart is empty. Nothing to display.' al vaciar el carrito. Se detectó una posible discrepancia en el total general tras editar cantidad (ver caso 4). Para login no se dispone de cuenta de prueba: solicitar credenciales aprobadas al responsable antes de ejecutar los casos 9 y 10; no usar ni inventar credenciales.
+Plan QA funcional de la tienda Toolshop explorada con e2e/seed.spec.ts. Cada caso debe correr de forma independiente desde un navegador nuevo y carrito limpio, excepto donde se prepara explícitamente el estado en los pasos. Precio observado en la sesión: Combination Pliers $14.15 y Pliers $12.01. Autenticación válida sigue pendiente por una cuenta de prueba habilitada/credenciales válidas disponibles. Se agrega el ordenamiento de precios menor a mayor como escenario alternativo de reemplazo para la cobertura de login válido, sin eliminar la nota de pendiente.
 
 ## Test Scenarios
 
@@ -15,129 +15,131 @@ Plan de diez casos E2E, basados en la exploración de https://practicesoftwarete
 **File:** `specs/toolshop-plan.md`
 
 **Steps:**
-  1. Precondiciones: iniciar desde estado limpio, sin artículos en el carrito. Datos: Combination Pliers, precio observado $14.15, cantidad 1.
-    - expect: El catálogo inicial se muestra y el carrito comienza vacío.
-  2. En el catálogo, abrir Combination Pliers y pulsar Add to cart sin modificar la cantidad.
-    - expect: Se muestra el aviso 'Product added to shopping cart.'
-    - expect: El indicador del carrito muestra 1 unidad.
-  3. Abrir el carrito desde el indicador del encabezado.
-    - expect: Aparece una fila Combination Pliers con cantidad 1, precio unitario $14.15 e importe $14.15.
-    - expect: El total del carrito es $14.15.
+  1. Precondiciones: navegador nuevo, carrito vacío. Datos: Combination Pliers, precio observado $14.15, cantidad 1.
+    - expect: El catálogo inicial se muestra con productos disponibles.
+  2. Abrir Combination Pliers, comprobar el detalle del producto y pulsar Add to cart con cantidad 1.
+    - expect: Se muestra 'Product added to shopping cart.' y el indicador del carrito muestra 1.
+  3. Abrir el carrito.
+    - expect: Una fila de Combination Pliers con cantidad 1, precio unitario $14.15 y total $14.15; total general $14.15.
 
 #### 1.2. Agregar dos unidades del mismo producto
 
 **File:** `specs/toolshop-plan.md`
 
 **Steps:**
-  1. Precondiciones: carrito vacío y sesión limpia. Datos: Combination Pliers ($14.15), cantidad deseada 2.
-    - expect: La página de detalle del producto ofrece controles para incrementar la cantidad y el botón Add to cart.
+  1. Precondiciones: navegador nuevo, carrito vacío. Datos: Combination Pliers, $14.15, cantidad 2.
+    - expect: El producto está disponible en el catálogo.
   2. Abrir Combination Pliers, incrementar Quantity de 1 a 2 y pulsar Add to cart.
-    - expect: Se muestra el aviso 'Product added to shopping cart.'
-  3. Abrir el carrito y comprobar la fila del producto.
-    - expect: Hay una sola fila Combination Pliers con cantidad 2.
-    - expect: El importe de la fila es $28.30 y el indicador del carrito muestra 2 unidades.
-    - expect: El total general es $28.30.
+    - expect: Se muestra 'Product added to shopping cart.'
+  3. Abrir el carrito.
+    - expect: Una fila del producto con cantidad 2 e importe $28.30; indicador 2 unidades y total general $28.30.
 
 #### 1.3. Agregar dos productos distintos
 
 **File:** `specs/toolshop-plan.md`
 
 **Steps:**
-  1. Precondiciones: carrito vacío y sesión limpia. Datos: una Combination Pliers ($14.15) y un Pliers ($12.01).
-    - expect: Se pueden abrir ambos productos desde el catálogo.
-  2. Abrir Combination Pliers y pulsar Add to cart con cantidad 1. Volver al catálogo con Continue Shopping, abrir Pliers y pulsar Add to cart con cantidad 1.
-    - expect: Cada acción de agregado confirma que el producto fue añadido al carrito.
+  1. Precondiciones: navegador nuevo, carrito vacío. Datos: Combination Pliers ($14.15) y Pliers ($12.01), una unidad de cada uno.
+    - expect: Ambos productos están disponibles en el catálogo.
+  2. Agregar Combination Pliers. Volver al catálogo, abrir Pliers y agregar una unidad.
+    - expect: La aplicación confirma cada producto agregado.
   3. Abrir el carrito.
-    - expect: Se muestran dos filas independientes: Combination Pliers, cantidad 1, $14.15; Pliers, cantidad 1, $12.01.
-    - expect: El indicador muestra 2 unidades y el total general es $26.16.
+    - expect: Dos filas independientes con una unidad de cada producto y total general $26.16.
 
 #### 1.4. Cambiar la cantidad desde el carrito
 
 **File:** `specs/toolshop-plan.md`
 
 **Steps:**
-  1. Precondiciones: carrito limpio salvo por el producto de preparación. Datos: una Combination Pliers ($14.15); cambiar cantidad de 1 a 2.
-    - expect: El carrito muestra inicialmente cantidad 1 e importe $14.15.
-  2. En el carrito, cambiar el campo Quantity for Combination Pliers a 2.
-    - expect: Se muestra el aviso 'Product quantity updated.'
-    - expect: La cantidad permanece en 2 y el importe de la fila cambia a $28.30.
-  3. Comprobar el total general de la tabla y el indicador del carrito.
-    - expect: El total general se recalcula a $28.30 y el indicador del carrito muestra 2 unidades.
-    - expect: Hallazgo de exploración: en la comprobación realizada, la fila cambió a $28.30 pero el total general permaneció en $14.15. Si se reproduce, registrar el caso como fallo de recálculo del total.
+  1. Precondiciones: carrito limpio salvo por los datos de preparación. Datos: una Combination Pliers ($14.15); nueva cantidad 2.
+    - expect: El carrito muestra inicialmente cantidad 1.
+  2. En el carrito, cambiar Quantity for Combination Pliers a 2 y abandonar el campo con Tab para confirmar la edición.
+    - expect: Se muestra 'Product quantity updated.' y el importe de la fila pasa a $28.30.
+  3. Comprobar el total general.
+    - expect: El total general se actualiza a $28.30. Si permanece en $14.15, reportar el defecto, no alterar la expectativa.
 
 #### 1.5. Eliminar un producto del carrito
 
 **File:** `specs/toolshop-plan.md`
 
 **Steps:**
-  1. Precondiciones: carrito limpio salvo por los productos de preparación. Datos: una Combination Pliers y un Pliers (cantidad 1 cada uno).
-    - expect: El carrito contiene dos filas de productos distintas.
-  2. Pulsar el control de eliminar de la fila Pliers, sin eliminar Combination Pliers.
-    - expect: Se muestra el aviso 'Product deleted.'
-  3. Revisar las filas, el indicador del carrito y el total.
-    - expect: Pliers ya no aparece; Combination Pliers permanece con cantidad 1 e importe $14.15.
-    - expect: El indicador muestra 1 unidad y el total es $14.15.
+  1. Precondiciones: navegador nuevo, carrito vacío. Datos: Combination Pliers y Pliers, una unidad cada uno.
+    - expect: El carrito preparado contiene dos productos distintos.
+  2. Eliminar solamente la fila Pliers.
+    - expect: Se muestra 'Product deleted.'
+  3. Comprobar filas y total.
+    - expect: Solo queda Combination Pliers con cantidad 1 y el total se recalcula a $14.15.
 
 #### 1.6. Eliminar el último producto
 
 **File:** `specs/toolshop-plan.md`
 
 **Steps:**
-  1. Precondiciones: carrito limpio salvo por un producto de preparación. Datos: una Combination Pliers con cantidad 1.
-    - expect: El carrito muestra exactamente una fila.
-  2. Pulsar el control de eliminar de la única fila.
-    - expect: Se muestra el aviso 'Product deleted.'
-  3. Comprobar el contenido de la página del carrito.
-    - expect: No quedan filas de productos y aparece el mensaje exacto 'The cart is empty. Nothing to display.'
+  1. Precondiciones: navegador nuevo, carrito vacío. Preparar una Combination Pliers.
+    - expect: El carrito contiene una fila.
+  2. Eliminar la única fila.
+    - expect: Se muestra 'Product deleted.'
+  3. Comprobar el estado del carrito.
+    - expect: No hay filas y aparece 'The cart is empty. Nothing to display.'
 
 #### 1.7. Buscar un producto por nombre
 
 **File:** `specs/toolshop-plan.md`
 
 **Steps:**
-  1. Precondiciones: estado limpio; abrir el catálogo. Datos: consulta 'Combination Pliers'.
-    - expect: El catálogo presenta el campo Search.
-  2. Escribir Combination Pliers en Search y pulsar el botón Search.
-    - expect: La búsqueda se aplica al pulsar Search.
-  3. Revisar los productos devueltos.
-    - expect: Aparece Combination Pliers entre los resultados y no aparecen productos con nombres no coincidentes.
-    - expect: La exploración comprobó una coincidencia para esta consulta.
+  1. Precondiciones: navegador nuevo, catálogo abierto. Datos: consulta 'Combination Pliers'.
+    - expect: El campo Search está disponible.
+  2. Escribir la consulta y pulsar Search.
+    - expect: La búsqueda se aplica tras pulsar Search.
+  3. Revisar el catálogo.
+    - expect: Se muestra Combination Pliers como coincidencia; en la exploración se observó un único resultado.
 
 #### 1.8. Buscar un texto sin coincidencias
 
 **File:** `specs/toolshop-plan.md`
 
 **Steps:**
-  1. Precondiciones: estado limpio; abrir el catálogo. Datos: consulta única 'zzqv-no-product-987654'.
-    - expect: El catálogo presenta el campo Search.
-  2. Escribir zzqv-no-product-987654 en Search y pulsar el botón Search.
-    - expect: La búsqueda se aplica al pulsar Search.
-  3. Revisar el catálogo y el estado de resultados vacíos.
-    - expect: No se muestra ningún producto.
-    - expect: Aparece el mensaje exacto 'There are no products found.'
+  1. Precondiciones: navegador nuevo, catálogo abierto. Datos: consulta única 'zzqv-no-product-987654'.
+    - expect: El campo Search está disponible.
+  2. Escribir el texto y pulsar Search.
+    - expect: La búsqueda se aplica.
+  3. Revisar resultados vacíos.
+    - expect: No se muestran productos y aparece 'There are no products found.'
 
-### 2. Autenticación
+### 2. Autenticación y escenario de reemplazo
 
 **Seed:** `e2e/seed.spec.ts`
 
-#### 2.1. Iniciar sesión con credenciales válidas
+#### 2.1. Iniciar sesión con credenciales válidas (pendiente)
 
 **File:** `specs/toolshop-plan.md`
 
 **Steps:**
-  1. Precondiciones: disponer de una cuenta de prueba existente y habilitada, con credenciales facilitadas por el responsable del entorno. No inventar ni reutilizar credenciales personales. Datos: correo y contraseña de esa cuenta, suministrados de forma segura.
-    - expect: Sin una cuenta de prueba aprobada, este caso queda bloqueado y no debe ejecutarse.
-  2. Abrir Sign in, introducir el correo y la contraseña válidos y pulsar Login.
-    - expect: La autenticación se completa sin mensaje de error.
-    - expect: La aplicación deja la pantalla /auth/login y muestra un estado identificable de usuario autenticado o su área de cuenta.
+  1. Precondiciones: pendiente de cuenta de prueba habilitada y credenciales aprobadas proporcionadas de forma segura. No inventar credenciales.
+    - expect: Este caso permanece pendiente. Al contar con cuenta de prueba, un login correcto debe salir de /auth/login y mostrar el estado autenticado.
 
 #### 2.2. Iniciar sesión con contraseña incorrecta
 
 **File:** `specs/toolshop-plan.md`
 
 **Steps:**
-  1. Precondiciones: disponer de la misma cuenta de prueba aprobada del caso de login válido. Datos: correo válido de esa cuenta y una contraseña deliberadamente incorrecta que no sea una credencial real de otro usuario.
-    - expect: Sin una cuenta de prueba aprobada, este caso queda bloqueado; no sustituir el correo por uno inventado porque no permitiría distinguir contraseña errónea de usuario inexistente.
-  2. Abrir Sign in, introducir el correo válido y la contraseña incorrecta y pulsar Login.
-    - expect: La aplicación rechaza el acceso y muestra feedback de credenciales no válidas.
-    - expect: El usuario permanece sin autenticar en /auth/login y no aparece su área de cuenta.
+  1. Precondiciones: cuenta de prueba habilitada distinta de la cuenta del login válido, correo de esa cuenta disponible por entorno. Datos: correo de cuenta de prueba y contraseña ficticia incorrecta, distinta de la válida.
+    - expect: La cuenta no debe estar bloqueada antes del intento.
+  2. Enviar el formulario de login.
+    - expect: Aparece 'Invalid email or password', se permanece en /auth/login y el usuario continúa sin autenticar. Si aparece 'Account locked', informar la cuenta bloqueada y no considerar correcto el caso.
+
+#### 2.3. Reemplazo de cobertura: ordenar productos por precio de menor a mayor
+
+**File:** `specs/toolshop-plan.md`
+
+**Steps:**
+  1. Precondiciones: abrir la tienda desde estado limpio, sesión sin autenticar, catálogo en su estado inicial, sin filtros ni búsqueda activos. El catálogo inicial muestra paginación; validar solamente los productos de la página visible, no afirmar que se cubrió todo el catálogo. Datos: criterio Price (Low - High), valor de opción observado 'price,asc'.
+    - expect: El menú de ordenamiento contiene la opción visible 'Price (Low - High)'.
+  2. Seleccionar 'Price (Low - High)' en el control Sort.
+    - expect: El control mantiene seleccionado el criterio de precio ascendente y los productos visibles se actualizan reordenándose sin navegar a una pantalla distinta.
+  3. Esperar la finalización mediante una señal observable: comprobar que la opción seleccionada permanece en 'Price (Low - High)' y que las tarjetas visibles y sus precios ya reflejan el resultado ordenado; usar aserciones de espera automática sobre ese estado, sin pausas fijas.
+    - expect: Hay al menos dos tarjetas de producto visibles tras aplicarse el orden.
+  4. Obtener el precio de cada tarjeta visible desde el elemento de precio de la propia tarjeta, quitando el símbolo monetario y convirtiendo el valor a número decimal. Comparar cada precio con el siguiente en secuencia.
+    - expect: Los precios de los productos visibles están en orden numérico no decreciente: para cada índice, precio[i] <= precio[i+1].
+    - expect: Se permiten empates entre productos consecutivos.
+    - expect: La validación se limita a las tarjetas de la página visible; no se afirma cobertura del catálogo completo.
