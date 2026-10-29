@@ -22,9 +22,7 @@ test.describe("Catálogo y carrito", () => {
     await expect(
       page.getByRole("alert", { name: "Product quantity updated." }),
     ).toBeVisible();
-    await expect(page.locator('[data-test="line-price"]')).toHaveText(
-      "$228.30",
-    );
+    await expect(page.locator('[data-test="line-price"]')).toHaveText("$28.30");
     await expect(
       page.getByRole("row", { name: /Total.*\$28\.30/ }),
     ).toBeVisible();
