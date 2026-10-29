@@ -112,6 +112,8 @@ Plan QA funcional de la tienda Toolshop explorada con e2e/seed.spec.ts. Cada cas
 
 #### 2.1. Iniciar sesión con credenciales válidas (pendiente)
 
+**Estado:** pendiente de reincorporar. El test automatizado fue eliminado por solicitud del responsable de la práctica tras rechazos de acceso también reproducidos manualmente. No se confirmó la causa. Este escenario no forma parte de la suite ejecutable actual.
+
 **File:** `specs/toolshop-plan.md`
 
 **Steps:**
