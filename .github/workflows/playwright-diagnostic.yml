@@ -27,10 +27,9 @@ jobs:
       - name: Run diagnostic Playwright tests
         run: >-
           npx playwright test
-          e2e/toolshop/add-one-unit-to-cart.spec.ts
-          e2e/toolshop/remove-last-product.spec.ts
-          e2e/toolshop/remove-one-product.spec.ts
-          e2e/toolshop/sort-price-ascending.spec.ts
+          e2e/toolshop/cart.spec.ts
+          e2e/toolshop/catalog.spec.ts
+          --grep "Agregar una unidad al carrito|Eliminar el último producto|Eliminar un producto del carrito|Ordenar productos por precio de menor a mayor"
           --project=chromium
           --workers=1
           --retries=0

@@ -1,8 +1,11 @@
 import { expect, test } from "@playwright/test";
 
-test.describe("Catálogo y carrito", () => {
-  test("Ordenar productos por precio de menor a mayor", async ({ page }) => {
+test.describe("Ordenamiento del catálogo", () => {
+  test.beforeEach(async ({ page }) => {
     await page.goto("https://practicesoftwaretesting.com/");
+  });
+
+  test("Ordenar productos por precio de menor a mayor", async ({ page }) => {
 
     const sortSelect = page.locator('select[data-test="sort"]');
 

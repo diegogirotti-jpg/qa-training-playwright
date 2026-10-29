@@ -37,3 +37,12 @@ Los reportes y capturas temporales están excluidos de Git; pueden contener dato
 CI está configurado. Queda reincorporar o acordar el reemplazo del caso de login válido para completar diez casos UI, verificar el bloqueo de merge en un repositorio que lo permita, reunir las evidencias y continuar con QATES, challenge y métricas.
 
 La suite principal actual tiene once tests: nueve UI y dos API.
+
+## Organización de los tests UI
+
+- `e2e/toolshop/cart.spec.ts`: seis casos de carrito.
+- `e2e/toolshop/search.spec.ts`: dos casos de búsqueda.
+- `e2e/toolshop/catalog.spec.ts`: un caso de ordenamiento.
+- `e2e/toolshop/login-invalid-password.spec.ts`: un caso de autenticación negativa.
+
+Cada grupo de catálogo navega desde su propio `beforeEach`: se ejecuta antes de cada test y no comparte el carrito entre casos. API y login conservan su preparación específica. Los diez casos UI y los dos API se ejecutan con el workflow principal sin cambios de comando.
