@@ -27,7 +27,7 @@ function getFictionalWrongPassword(): string {
 }
 
 test.describe("Autenticación", () => {
-  test("Login con el mismo correo y una contraseña incorrecta", async ({ page }) => {
+  test("Login con una cuenta de prueba separada y una contraseña incorrecta", async ({ page }) => {
     // Open a fresh login session for the enabled negative-test account.
     const loginPage = new LoginPage(page);
     await loginPage.goto();

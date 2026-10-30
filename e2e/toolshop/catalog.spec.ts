@@ -15,8 +15,16 @@ test.describe("Ordenamiento del catálogo", () => {
       page.locator('a[href*="/product/"] [data-test="product-price"]').first(),
     ).toBeVisible();
 
-    await sortSelect.selectOption("price,asc");
+    // La opción visible debe existir con el texto exacto antes de seleccionarla.
+    await expect(
+      sortSelect.locator("option", { hasText: "Price (Low - High)" }),
+    ).toHaveCount(1);
+
+    await sortSelect.selectOption({ label: "Price (Low - High)" });
     await expect(sortSelect).toHaveValue("price,asc");
+    await expect(sortSelect.locator("option:checked")).toHaveText(
+      "Price (Low - High)",
+    );
 
     await expect
       .poll(async () => {

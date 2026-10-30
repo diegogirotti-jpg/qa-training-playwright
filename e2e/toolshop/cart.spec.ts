@@ -23,6 +23,12 @@ test.describe("Carrito", () => {
 
     // 4. Abrir el carrito; verificar una fila con Combination Pliers, cantidad 1, precio y total $14.15.
     await page.locator('[data-test="nav-cart"]').click();
+    await expect(
+      page
+        .locator("tbody tr")
+        .filter({ hasText: /^Combination Pliers/ })
+        .locator('input[data-test="product-quantity"]'),
+    ).toHaveValue("1");
     await expect(page.getByRole("row", { name: /Combination Pliers.*\$14\.15.*\$14\.15/ })).toBeVisible();
     await expect(page.getByRole("row", { name: /Total.*\$14\.15/ })).toBeVisible();
   });
@@ -38,9 +44,10 @@ test.describe("Carrito", () => {
     await page.getByRole("button", { name: "Increase quantity" }).click();
     await expect(quantity).toHaveValue("2");
 
-    // 3. Pulsar Add to cart.
+    // 3. Pulsar Add to cart; comprobar aviso de agregado y badge 2.
     await page.getByRole("button", { name: "Add to cart" }).click();
     await expect(page.getByRole("alert", { name: "Product added to shopping cart." })).toBeVisible();
+    await expect(page.locator('[data-test="nav-cart"]')).toHaveText("2");
 
     // 4. Abrir el carrito y comprobar una fila de Combination Pliers, cantidad 2, importe $28.30 y total $28.30.
     await page.locator('[data-test="nav-cart"]').click();
