@@ -1,19 +1,15 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "../fixtures/toolshop.fixture";
 
 test.describe("Ordenamiento del catálogo", () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto("https://practicesoftwaretesting.com/");
+  test.beforeEach(async ({ catalogPage }) => {
+    await catalogPage.goto();
   });
 
-  test("Ordenar productos por precio de menor a mayor", async ({ page }) => {
+  test("Ordenar productos por precio de menor a mayor", async ({ catalogPage }) => {
 
-    const sortSelect = page.locator('select[data-test="sort"]');
+    const sortSelect = catalogPage.sortSelect;
 
     await expect(sortSelect).toBeVisible();
-
-    await expect(
-      page.locator('a[href*="/product/"] [data-test="product-price"]').first(),
-    ).toBeVisible();
 
     // La opción visible debe existir con el texto exacto antes de seleccionarla.
     await expect(
@@ -28,15 +24,7 @@ test.describe("Ordenamiento del catálogo", () => {
 
     await expect
       .poll(async () => {
-        const priceTexts = await page
-          .locator('a[href*="/product/"] [data-test="product-price"]')
-          .allTextContents();
-
-        const prices = priceTexts.map((text) => {
-          const match = /^\$([\d,]+\.\d{2})$/.exec(text.trim());
-
-          return match ? Number(match[1].replace(/,/g, "")) : Number.NaN;
-        });
+        const prices = await catalogPage.priceValues();
 
         return {
           hasAtLeastTwo: prices.length >= 2,

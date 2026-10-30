@@ -6,13 +6,21 @@
   "directories": {
     "test": "tests"
   },
-  "scripts": {},
+  "scripts": {
+    "test:toolshop": "playwright test e2e/toolshop e2e/api --project=chromium --workers=1 --retries=0",
+    "test:ui:no-login": "playwright test e2e/toolshop/cart.spec.ts e2e/toolshop/search.spec.ts e2e/toolshop/catalog.spec.ts --project=chromium --workers=1 --retries=0",
+    "test:api": "playwright test e2e/api --project=chromium --workers=1 --retries=0",
+    "test:list": "playwright test e2e/toolshop e2e/api --project=chromium --list",
+    "typecheck": "tsc --noEmit",
+    "report": "playwright show-report"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
     "@playwright/test": "^1.64.1",
-    "@types/node": "^26.6.6"
+    "@types/node": "^26.6.6",
+    "typescript": "^7.0.2"
   }
 }

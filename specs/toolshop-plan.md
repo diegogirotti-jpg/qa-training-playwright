@@ -2,7 +2,7 @@
 
 ## Application Overview
 
-Plan QA funcional de la tienda Toolshop explorada con e2e/seed.spec.ts. Cada caso debe correr de forma independiente desde un navegador nuevo y carrito limpio, excepto donde se prepara explícitamente el estado en los pasos. Precio observado en la sesión: Combination Pliers $14.15 y Pliers $12.01. Autenticación válida sigue pendiente por una cuenta de prueba habilitada/credenciales válidas disponibles. Se agrega el ordenamiento de precios menor a mayor como escenario alternativo de reemplazo para la cobertura de login válido, sin eliminar la nota de pendiente.
+Plan QA funcional de la tienda Toolshop explorada con e2e/seed.spec.ts. Cada caso debe correr de forma independiente desde un navegador nuevo y carrito limpio, excepto donde se prepara explícitamente el estado en los pasos. Precio observado en la sesión: Combination Pliers $14.15 y Slip Joint Pliers $9.17. Autenticación válida sigue pendiente por una cuenta de prueba habilitada/credenciales válidas disponibles. Se agrega el ordenamiento de precios menor a mayor como escenario alternativo de reemplazo para la cobertura de login válido, sin eliminar la nota de pendiente.
 
 ## Test Scenarios
 
@@ -39,12 +39,12 @@ Plan QA funcional de la tienda Toolshop explorada con e2e/seed.spec.ts. Cada cas
 **File:** `specs/toolshop-plan.md`
 
 **Steps:**
-  1. Precondiciones: navegador nuevo, carrito vacío. Datos: Combination Pliers ($14.15) y Pliers ($12.01), una unidad de cada uno.
+  1. Precondiciones: navegador nuevo, carrito vacío. Datos: Combination Pliers ($14.15) y Slip Joint Pliers ($9.17), una unidad de cada uno.
     - expect: Ambos productos están disponibles en el catálogo.
-  2. Agregar Combination Pliers. Volver al catálogo, abrir Pliers y agregar una unidad.
+  2. Agregar Combination Pliers. Volver al catálogo, abrir Slip Joint Pliers y agregar una unidad.
     - expect: La aplicación confirma cada producto agregado.
   3. Abrir el carrito.
-    - expect: Dos filas independientes con una unidad de cada producto y total general $26.16.
+    - expect: Dos filas independientes con una unidad de cada producto y total general $23.32.
 
 #### 1.4. Cambiar la cantidad desde el carrito
 
@@ -63,9 +63,9 @@ Plan QA funcional de la tienda Toolshop explorada con e2e/seed.spec.ts. Cada cas
 **File:** `specs/toolshop-plan.md`
 
 **Steps:**
-  1. Precondiciones: navegador nuevo, carrito vacío. Datos: Combination Pliers y Pliers, una unidad cada uno.
+  1. Precondiciones: navegador nuevo, carrito vacío. Datos: Combination Pliers y Slip Joint Pliers, una unidad cada uno.
     - expect: El carrito preparado contiene dos productos distintos.
-  2. Eliminar solamente la fila Pliers.
+  2. Eliminar solamente la fila Slip Joint Pliers.
     - expect: Se muestra 'Product deleted.'
   3. Comprobar filas y total.
     - expect: Solo queda Combination Pliers con cantidad 1 y el total se recalcula a $14.15.
@@ -145,3 +145,7 @@ Plan QA funcional de la tienda Toolshop explorada con e2e/seed.spec.ts. Cada cas
     - expect: Los precios de los productos visibles están en orden numérico no decreciente: para cada índice, precio[i] <= precio[i+1].
     - expect: Se permiten empates entre productos consecutivos.
     - expect: La validación se limita a las tarjetas de la página visible; no se afirma cobertura del catálogo completo.
+
+## Actualización de datos — 2026-10-30
+
+Los escenarios 1.3 y 1.5 usan Slip Joint Pliers ($9.17) como segundo producto. Pliers ($12.01), usado en la exploración original, apareció sin stock en la UI y con in_stock=false en GET https://api.practicesoftwaretesting.com/products. Slip Joint Pliers se observó con in_stock=true, is_rental=false e is_location_offer=false. Con Combination Pliers ($14.15), el total esperado es $23.32. Al eliminar Slip Joint Pliers permanece $14.15. La disponibilidad es una precondición de la demo compartida y puede cambiar; no se elige un sustituto automáticamente durante el test.

@@ -18,7 +18,7 @@ export class LoginPage {
   }
 
   async goto(): Promise<void> {
-    await this.page.goto("https://practicesoftwaretesting.com/auth/login");
+    await this.page.goto("/auth/login");
     await expect(this.loginHeading).toBeVisible();
   }
 

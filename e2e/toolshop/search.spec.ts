@@ -1,24 +1,15 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "../fixtures/toolshop.fixture";
 
 test.describe("Búsqueda", () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto("https://practicesoftwaretesting.com/");
-
-    await expect(
-      page.locator('a[href*="/product/"] [data-test="product-price"]').first(),
-    ).toBeVisible();
+  test.beforeEach(async ({ catalogPage }) => {
+    await catalogPage.goto();
   });
 
-  test("Buscar un producto por nombre", async ({ page }) => {
-    // 1. Desde catálogo limpio, escribir 'Combination Pliers' en Search.
-    await page
-      .getByRole("textbox", { name: "Search" })
-      .fill("Combination Pliers");
+  test("Buscar un producto por nombre", async ({ page, catalogPage }) => {
+    // Buscar desde el catálogo limpio: 'Combination Pliers' en Search.
+    await catalogPage.search("Combination Pliers");
 
-    // 2. Pulsar Search.
-    await page.getByRole("button", { name: "Search" }).click();
-
-    // 3. Verificar que aparece Combination Pliers como único resultado.
+    // Verificar que aparece Combination Pliers como único resultado.
     await expect(
       page.getByRole("heading", { name: "Searched for: Combination Pliers" }),
     ).toBeVisible();
@@ -27,24 +18,19 @@ test.describe("Búsqueda", () => {
         exact: true,
       }),
     ).toBeVisible();
-    const results = page.locator('a[href*="/product/"]');
+    const results = catalogPage.cards;
     await expect(results).toHaveCount(1);
-    await expect(results).toContainText("Combination Pliers");
+    await expect(results.locator('[data-test="product-name"]')).toHaveText("Combination Pliers");
   });
 
-  test("Buscar un texto sin coincidencias", async ({ page }) => {
-    // 1. Desde catálogo limpio, escribir 'zzqv-no-product-987654' en Search.
-    await page
-      .getByRole("textbox", { name: "Search" })
-      .fill("zzqv-no-product-987654");
+  test("Buscar un texto sin coincidencias", async ({ page, catalogPage }) => {
+    // Buscar desde el catálogo limpio: 'zzqv-no-product-987654' en Search.
+    await catalogPage.search("zzqv-no-product-987654");
 
-    // 2. Pulsar Search.
-    await page.getByRole("button", { name: "Search" }).click();
-
-    // 3. Verificar que no hay productos y aparece 'There are no products found.'
+    // Verificar que no hay productos y aparece 'There are no products found.'
     await expect(
       page.getByText("There are no products found.", { exact: true }),
     ).toBeVisible();
-    await expect(page.locator('a[href*="/product/"]')).toHaveCount(0);
+    await expect(catalogPage.cards).toHaveCount(0);
   });
 });
