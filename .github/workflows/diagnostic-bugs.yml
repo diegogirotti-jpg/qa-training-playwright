@@ -1,0 +1,28 @@
+name: Toolshop seeded-bug diagnostic
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  diagnostic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run test:diagnostic-unit
+      - run: npx playwright install --with-deps chromium
+      - run: npm run diagnose
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: toolshop-diagnostic
+          path: diagnostic-output/
+          retention-days: 14

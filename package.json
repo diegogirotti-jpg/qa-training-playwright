@@ -1,7 +1,7 @@
 {
   "name": "qa-training-playwright",
   "version": "1.0.0",
-  "description": "Proyecto para los ejercicios de automatización del path de Santex.",
+  "description": "Proyecto para los ejercicios de automatizaci\u00f3n del path de Santex.",
   "main": "index.js",
   "directories": {
     "test": "tests"
@@ -12,7 +12,11 @@
     "test:api": "playwright test e2e/api --project=chromium --workers=1 --retries=0",
     "test:list": "playwright test e2e/toolshop e2e/api --project=chromium --list",
     "typecheck": "tsc --noEmit",
-    "report": "playwright show-report"
+    "report": "playwright show-report",
+    "diagnose": "playwright test --config=playwright.diagnostic.config.ts",
+    "diagnose:list": "playwright test --config=playwright.diagnostic.config.ts --list",
+    "diagnose:report": "playwright show-report diagnostic-output/playwright-report",
+    "test:diagnostic-unit": "playwright test --config=playwright.diagnostic-unit.config.ts"
   },
   "keywords": [],
   "author": "",
