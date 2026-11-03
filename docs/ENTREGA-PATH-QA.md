@@ -43,3 +43,9 @@ Para BUG-002 y BUG-003 se identificaron template, clase y cambio de incorporaci�
 ## Estado de presentación
 
 Classroom mostró ambas tareas como pendientes de entrega y con vencimiento hoy 03/11 cuando se revisaron. El primer test con Playwright figura aprobado con 100/100 en la captura aportada. Las capturas y los enlaces técnicos no acreditan aprobación del resto del path ni del proyecto del cliente.
+
+### Estado al cerrar la preparación del 03/11
+
+Baseline confirmado y actualizado en Arturia. Su tarea de Classroom quedó abierta para adjuntar un ZIP accesible: la vista previa del enlace al repo privado devuelve Page not found. La carga automática del archivo quedó bloqueada por permisos de navegador y revisión de autorización; el usuario eligió adjuntarlo manualmente desde su cuenta Santex. **No se acredita esta tarea como entregada al cierre de esta preparación.**
+
+El ZIP preparado contiene la carpeta de baseline (tablero HTML, captura, fuentes y cálculo). Después de adjuntarlo hay que pulsar Entregar y comprobar el estado Entregado. La tarea de automatización no se marcó como finalizada: sigue pendiente la ejecución del README por otra persona y su devolución.
