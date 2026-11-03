@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tablero de progreso · AI Quality Engineer · Santex</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400&family=Inter:wght@300;400;500&display=swap">
+<style>
+/* Path QA → AI Quality Engineer. Cada QA se mide contra sí mismo: baseline al arrancar, registros durante el path, informe comparativo en la demo final.
+   Benchmarks: Capers Jones (DRE y bad-fix injection), Google Testing Blog 2016 (tests inestables). */
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+ --bg:#FAFBFB;--surf:#FFFFFF;--fog:#ECF6F5;--line:#C3E1E0;--t1:#0F2826;--t2:#2C4644;--t3:#5A706E;
+ --teal:#006060;--teal6:#1F8C8C;--ok:#1E7A4C;--okb:#DCF0E6;--warn:#A9701B;--warnb:#FDF1DD;--bad:#A13A3A;--badb:#F3E4E4;--input:#FFFFFF}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#000D0E;--surf:#0B1C1D;--fog:#0F2A2A;--line:#1F3A3A;--t1:#F4F9F9;--t2:#CCD6D5;--t3:#93A6A5;--teal:#7EC8B4;--teal6:#7EC8B4;--ok:#7FD3A8;--okb:#0E2C1F;--warn:#E9B567;--warnb:#2E2210;--bad:#E79393;--badb:#331616;--input:#071516}}
+:root[data-theme="dark"]{--bg:#000D0E;--surf:#0B1C1D;--fog:#0F2A2A;--line:#1F3A3A;--t1:#F4F9F9;--t2:#CCD6D5;--t3:#93A6A5;--teal:#7EC8B4;--teal6:#7EC8B4;--ok:#7FD3A8;--okb:#0E2C1F;--warn:#E9B567;--warnb:#2E2210;--bad:#E79393;--badb:#331616;--input:#071516}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 64px)}
+body{margin:0;background:var(--bg);color:var(--t1);font-family:Inter,system-ui,sans-serif;font-weight:300;font-size:16px;line-height:1.5}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+h1,h2{font-family:'Chakra Petch',sans-serif;font-weight:300;margin:0;letter-spacing:-.01em}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--teal6);outline-offset:2px}
+.head{background:linear-gradient(140deg,#0A4242 0%,#006060 60%,#0a7a78 100%);color:#F4F9F9;padding:40px 0 28px}
+.head h1{font-size:clamp(32px,4.5vw,46px);line-height:1.1}
+.head p{margin:10px 0 0;color:rgba(244,249,249,.8);max-width:64ch}
+.meta{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:24px}
+.meta label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:rgba(244,249,249,.75)}
+.meta input,.meta select{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);border-radius:8px;padding:8px 10px;color:#fff;min-width:0}
+.meta select option{color:#0F2826}
+.meta input::placeholder{color:rgba(244,249,249,.5)}
+@media(max-width:820px){.meta{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.meta{grid-template-columns:1fr}}
+.bar{position:sticky;top:0;z-index:5;background:var(--surf);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px)}
+.bar .wrap{display:flex;align-items:center;gap:18px;min-height:60px;flex-wrap:wrap;padding-top:8px;padding-bottom:8px}
+.st{display:flex;align-items:baseline;gap:8px;font-size:14px;color:var(--t2)}
+.st b{font-family:'Chakra Petch',sans-serif;font-weight:400;font-size:24px;color:var(--t1)}
+.st.good b{color:var(--ok)} .st.badc b{color:var(--bad)}
+.nav{margin-left:auto;display:flex;gap:4px;flex-wrap:wrap}
+.nav a{font-size:14px;color:var(--t2);text-decoration:none;padding:6px 10px;border-radius:8px}
+.nav a:hover{background:var(--fog);color:var(--teal)}
+.save{font-size:13px;color:var(--t3);min-width:90px;text-align:right}
+section{padding:44px 0 8px}
+.sh{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:16px}
+.sh h2{font-size:30px;line-height:1.15}
+.sh p{margin:6px 0 0;color:var(--t2);max-width:70ch;font-size:15px}
+.n{font-family:'Chakra Petch',sans-serif;color:var(--teal6);margin-right:10px}
+.btn{border:1px solid var(--line);background:var(--surf);border-radius:8px;padding:8px 14px;cursor:pointer;font-weight:400;font-size:14px;color:var(--t1)}
+.btn:hover{border-color:var(--teal6);color:var(--teal)}
+.btn.pri{background:var(--teal);border-color:var(--teal);color:#fff}
+:root[data-theme="dark"] .btn.pri{color:#00191A}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn.pri{color:#00191A}}
+.x{border:none;background:none;color:var(--t3);cursor:pointer;font-size:20px;line-height:1;padding:4px 8px;border-radius:6px}
+.x:hover{color:var(--bad);background:var(--badb)}
+.ex{font-size:13px;color:var(--warn);background:var(--warnb);border-radius:8px;padding:8px 12px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.ex[hidden]{display:none}
+.ex button{border:none;background:none;color:inherit;text-decoration:underline;cursor:pointer;font-size:13px;padding:0}
+.rows{display:flex;flex-direction:column;gap:10px}
+.row{position:relative;background:var(--surf);border:1px solid var(--line);border-radius:12px;padding:14px 48px 14px 16px;display:grid;gap:10px 12px;align-items:end;grid-template-columns:repeat(12,minmax(0,1fr))}
+.row>.x{position:absolute;top:8px;right:8px}
+.row label{display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:var(--t3);min-width:0}
+.row input,.row select,textarea,.grid input{background:var(--input);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-width:0;width:100%;font-size:15px;color:var(--t1)}
+input:focus,select:focus,textarea:focus{border-color:var(--teal6);outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--teal6) 18%,transparent)}
+.c2{grid-column:span 2}.c3{grid-column:span 3}.c4{grid-column:span 4}.c12{grid-column:1/-1}
+.ref{font-size:13px;color:var(--t2);background:var(--fog);border-radius:8px;padding:8px 12px}
+.ref b{font-weight:500;color:var(--t1)}
+@media(max-width:820px){.row{grid-template-columns:repeat(6,minmax(0,1fr))}.c2,.c3{grid-column:span 3}.c4{grid-column:span 6}}
+@media(max-width:480px){.row{grid-template-columns:1fr 1fr}.c2{grid-column:span 1}.c3,.c4{grid-column:span 2}}
+.add{margin-top:12px}
+.empty{border:1px dashed var(--line);border-radius:12px;padding:22px;color:var(--t2);text-align:center}
+/* registros */
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surf)}
+.grid{border-collapse:collapse;width:100%;min-width:640px;font-size:14px}
+.grid th,.grid td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+.grid th{font-weight:500;color:var(--t2);background:var(--fog);white-space:nowrap}
+.grid th small{display:block;font-weight:300;color:var(--t3)}
+.grid td:first-child{white-space:nowrap}
+.grid input{padding:6px 8px;font-size:14px;max-width:130px}
+.grid input[type=date]{max-width:160px}
+.tag{font-size:12px;color:var(--teal);background:var(--fog);border-radius:999px;padding:2px 8px;margin-left:6px}
+/* evolución */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.card{background:var(--surf);border:1px solid var(--line);border-radius:12px;padding:16px}
+.card h3{font-family:'Chakra Petch',sans-serif;font-weight:400;font-size:17px;margin:0 0 8px;line-height:1.25}
+.vals{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.big{font-family:'Chakra Petch',sans-serif;font-size:32px;line-height:1}
+.from{font-size:13px;color:var(--t3)}
+.chg{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:400;padding:3px 10px;border-radius:999px;margin-top:8px}
+.chg.up{color:var(--ok);background:var(--okb)} .chg.dn{color:var(--bad);background:var(--badb)} .chg.eq{color:var(--warn);background:var(--warnb)}
+svg.sp{display:block;width:100%;height:46px;margin-top:10px}
+.sp path{fill:none;stroke:var(--teal6);stroke-width:2}
+.sp circle{fill:var(--teal6)}
+.sp line{stroke:var(--line);stroke-dasharray:3 3}
+/* informe */
+.rep{background:var(--surf);border:1px solid var(--line);border-radius:12px;padding:28px}
+.rep h3{font-family:'Chakra Petch',sans-serif;font-weight:400;font-size:20px;margin:22px 0 8px}
+.rh{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:14px}
+.rh div{font-size:14px;color:var(--t2)}
+.rep table{width:100%;border-collapse:collapse;font-size:14px}
+.rep th,.rep td{text-align:left;padding:8px;border-bottom:1px solid var(--line);vertical-align:top}
+.rep th{font-weight:500;color:var(--t2)}
+.note{font-size:14px;color:var(--t2)}
+textarea{min-height:90px;resize:vertical}
+.acts{display:flex;gap:10px;flex-wrap:wrap}
+footer{margin:56px 0 0;padding:20px 0 32px;border-top:1px solid var(--line);font-size:13px;color:var(--t3)}
+@media print{body{background:#fff;color:#000}.head,.bar,section:not(#informe),.sh .acts,footer,.noprint{display:none!important}.rep{border:none;padding:0}.rep textarea{border:none;padding:0;min-height:0}}
+</style>
+</head>
+<body>
+<header class="head"><div class="wrap">
+ <h1>Tablero de progreso</h1>
+ <p>Medite contra vos: tomá tu baseline al arrancar, registrá tus métricas durante el path y mostrá en la demo final cuánto cambió tu forma de trabajar.</p>
+ <div class="meta">
+  <label>Nombre<input id="m-nombre" placeholder="Tu nombre"></label>
+  <label>Perfil<select id="m-perfil"><option value="QA manual">QA manual</option><option value="QA automation">QA automation</option></select></label>
+  <label>Proyecto<input id="m-proyecto" placeholder="Proyecto o Toolshop"></label>
+  <label>Rol de destino<input id="m-rol" value="AI Quality Engineer" readonly></label>
+ </div>
+</div></header>
+<div class="bar"><div class="wrap">
+ <div class="st" id="st-n"><b>0</b> métricas</div>
+ <div class="st good" id="st-up"><b>0</b> mejoran</div>
+ <div class="st badc" id="st-dn"><b>0</b> empeoran</div>
+ <nav class="nav" aria-label="Secciones"><a href="#metricas">Métricas</a><a href="#registros">Registros</a><a href="#evolucion">Evolución</a><a href="#informe">Informe</a></nav>
+ <div class="save" id="save" aria-live="polite"></div>
+</div></div>
+<main class="wrap">
+ <div class="ex noprint" id="ex" hidden><span>Estás viendo un ejemplo para entender cómo se completa.</span><button type="button" id="clear">Empezar en blanco</button></div>
+
+ <section id="metricas">
+  <div class="sh"><div><h2><span class="n">1</span>Tus métricas</h2><p>Arrancás con métricas sugeridas, cada una con su referencia. Sacá las que no apliquen a tu proyecto y sumá las tuyas: con las de todo el grupo se arma el estándar.</p></div></div>
+  <div class="rows" id="met"></div>
+  <button class="btn add" type="button" id="add-met">Agregar métrica</button>
+ </section>
+
+ <section id="registros">
+  <div class="sh"><div><h2><span class="n">2</span>Registros</h2><p>El primer registro es tu baseline. Sumá uno al terminar cada tramo del path. Las cifras salen de tus datos (Jira, el pipeline, QATES), no del modelo.</p></div>
+   <div class="acts"><button class="btn pri" type="button" id="add-reg">Agregar registro</button></div></div>
+  <div class="tw"><table class="grid" id="reg"></table></div>
+ </section>
+
+ <section id="evolucion">
+  <div class="sh"><div><h2><span class="n">3</span>Evolución</h2><p>Cada métrica contra tu baseline. Mejorar depende de la métrica: en algunas mejor es que suba y en otras que baje.</p></div></div>
+  <div class="cards" id="evo"></div>
+ </section>
+
+ <section id="informe">
+  <div class="sh"><div><h2><span class="n">4</span>Informe comparativo</h2><p>Es lo que presentás en la evaluación final y en la demo: tu baseline contra tu último registro.</p></div>
+   <div class="acts"><button class="btn" type="button" id="copy">Copiar como texto</button><button class="btn pri" type="button" id="print">Imprimir o guardar PDF</button></div></div>
+  <div class="rep" id="rep"></div>
+ </section>
+</main>
+<footer><div class="wrap">Santex · Path Del testing a la ingeniería de calidad con IA. Tus datos se guardan solo para vos.</div></footer>
+<script>
+(function(){
+const $=s=>document.querySelector(s);
+const uid=()=>Math.random().toString(36).slice(2,9);
+const SUG=[
+ {id:'s1',nombre:'Bugs reportados',unidad:'por semana',sentido:'sube',ref:'Sin benchmark universal: depende del producto. Comparalo contra tu baseline.'},
+ {id:'s2',nombre:'Reportes completos en formato estándar',unidad:'%',sentido:'sube',ref:'Objetivo: 100 %. Es el formato obligatorio para todos los QA de Santex (origen, datos usados e impacto).'},
+ {id:'s3',nombre:'Bugs con la fuente identificada',unidad:'%',sentido:'sube',ref:'Escalón 2: archivo, clase y cambio. Sin benchmark universal.'},
+ {id:'s4',nombre:'Tiempo de resolución',unidad:'días',sentido:'baja',ref:'Desde el reporte hasta el fix mergeado. Sin benchmark universal: comparalo contra tu baseline.'},
+ {id:'s5',nombre:'Fixes que introducen un bug nuevo',unidad:'%',sentido:'baja',ref:'Referencia: cerca del 7 % de los fixes introduce un bug nuevo (Capers Jones, 2016).'},
+ {id:'s6',nombre:'Bugs que se escapan a producción',unidad:'%',sentido:'baja',ref:'Referencia: el promedio de la industria remueve antes de salir cerca del 85 % de los defectos (2011) y del 92,5 % (2016); los mejores proyectos superan el 99 % (Capers Jones).'},
+ {id:'s7',nombre:'Tiempo de la regresión',unidad:'horas',sentido:'baja',ref:'Cuánto tarda correr tu regresión completa. Sin benchmark universal.'},
+ {id:'s8',nombre:'Tests inestables',unidad:'% de corridas',sentido:'baja',ref:'Referencia: alrededor de 1,5 % de las corridas en Google (Google Testing Blog, 2016).'}];
+const EJEMPLO={"ejemplo": false, "nombre": "Diego Girotti", "perfil": "QA manual", "proyecto": "Toolshop", "comentario": "Baseline 30/10: 10 UI, 2 API, 55.9 s (registro documental del refactor, commit 8713611). Registro 03/11: 10 UI, 2 API, 9 UI sin login aprobados, 58.414619 s, Chromium, 1 worker, 0 retries, commit c2f7ea5. El tiempo subió 4.5%; no se establece tendencia ni ahorro manual. Fuente: evidencias/baseline/snapshot-20261103.json y calcular.py. Los diagnósticos de bugs sembrados se cuentan por separado.", "metricas": [{"id": "ui", "nombre": "Casos UI automatizados", "unidad": "casos", "sentido": "sube", "ref": "Inventario detectado en e2e/toolshop, Chromium. No equivale a casos aprobados."}, {"id": "api", "nombre": "Casos API automatizados", "unidad": "casos", "sentido": "sube", "ref": "Inventario detectado en e2e/api, Chromium. No se ejecutaron en la nueva medición."}, {"id": "duration", "nombre": "Duración de 9 UI sin login", "unidad": "segundos", "sentido": "baja", "ref": "stats.duration / 1000 de Playwright; carrito, búsqueda y orden; Chromium, 1 worker, 0 retries."}], "registros": [{"id": "base", "fecha": "2026-10-30", "v": {"ui": "10", "api": "2", "duration": "55.9"}}, {"id": "current", "fecha": "2026-11-03", "v": {"ui": "10", "api": "2", "duration": "58.4"}}]};
+const BLANCO=()=>({ejemplo:false,nombre:'',perfil:'QA manual',proyecto:'',comentario:'',metricas:SUG.map(m=>Object.assign({},m)),registros:[]});
+let S=null;
+let dbRef=null,timer=null;const LS='stx-toolshop-respaldo-20261103';
+const setSave=t=>{$('#save').textContent=t;};
+function persist(){clearTimeout(timer);setSave('Guardando…');timer=setTimeout(async()=>{const d=JSON.parse(JSON.stringify(S));
+ try{if(dbRef){await dbRef.set(d);}else{localStorage.setItem(LS,JSON.stringify(d));}setSave('Guardado');}
+ catch(e){try{localStorage.setItem(LS,JSON.stringify(d));setSave('Guardado en este navegador');}catch(_){setSave('No se pudo guardar');}}},700);}
+function loadLocal(){try{const v=localStorage.getItem(LS);return v?JSON.parse(v):null;}catch(_){return null;}}
+const num=v=>{if(v===''||v==null)return null;const n=Number(String(v).replace(',','.'));return Number.isFinite(n)?n:null;};
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt=n=>n.toLocaleString('es-AR',{maximumFractionDigits:1});
+const regs=()=>S.registros.slice().sort((a,b)=>(a.fecha||'').localeCompare(b.fecha||''));
+function serie(m){return regs().map(r=>({f:r.fecha,v:num(r.v[m.id])})).filter(p=>p.v!==null);}
+function cambio(m){const s=serie(m);if(s.length<2)return null;const a=s[0].v,b=s[s.length-1].v;const d=b-a;
+ const mejor=d===0?'eq':((m.sentido==='sube')===(d>0)?'up':'dn');return {a,b,d,pct:a!==0?d/Math.abs(a)*100:null,mejor,desde:s[0].f,hasta:s[s.length-1].f};}
+const dmy=f=>f?f.split('-').reverse().join('/'):'';
+function field(lab,key,val,o={}){if(o.options)return `<label class="${o.cls||''}">${lab}<select data-k="${key}">${o.options.map(([v,l])=>`<option value="${esc(v)}"${v===val?' selected':''}>${esc(l)}</option>`).join('')}</select></label>`;
+ return `<label class="${o.cls||''}">${lab}<input data-k="${key}" value="${esc(val)}" placeholder="${esc(o.ph||'')}"></label>`;}
+function renderMet(){const el=$('#met');
+ if(!S.metricas.length){el.innerHTML='<div class="empty">Sin métricas. Sumá las que vas a medir.</div>';return;}
+ el.innerHTML=S.metricas.map(m=>`<div class="row" data-id="${m.id}">
+  ${field('Métrica','nombre',m.nombre,{cls:'c4',ph:'Qué medís'})}${field('Unidad','unidad',m.unidad,{cls:'c2',ph:'%, días'})}
+  ${field('Mejor si','sentido',m.sentido,{cls:'c2',options:[['sube','sube'],['baja','baja']]})}
+  ${field('Objetivo (opcional)','objetivo',m.objetivo||'',{cls:'c2',ph:'—'})}
+  <div class="c2"></div>
+  ${m.ref?`<div class="ref c12"><b>Referencia.</b> ${esc(m.ref)}</div>`:''}
+  <button class="x" type="button" data-del aria-label="Quitar métrica">×</button></div>`).join('');}
+function renderReg(){const t=$('#reg');const R=regs();
+ if(!S.metricas.length){t.innerHTML='';return;}
+ t.innerHTML=`<thead><tr><th>Fecha</th>${S.metricas.map(m=>`<th>${esc(m.nombre||'Métrica')}<small>${esc(m.unidad||'')}</small></th>`).join('')}<th></th></tr></thead><tbody>`+
+ (R.length?R.map((r,i)=>`<tr data-r="${r.id}"><td><input type="date" data-f value="${esc(r.fecha)}">${i===0?'<span class="tag">Baseline</span>':''}</td>${S.metricas.map(m=>`<td><input data-m="${m.id}" inputmode="decimal" value="${esc(r.v[m.id]??'')}" aria-label="${esc(m.nombre)}"></td>`).join('')}<td><button class="x" type="button" data-delr aria-label="Quitar registro">×</button></td></tr>`).join(''):
+ `<tr><td colspan="${S.metricas.length+2}" class="note">Sin registros todavía. El primero que agregues es tu baseline.</td></tr>`)+'</tbody>';}
+function spark(m){const s=serie(m);if(s.length<2)return '';const W=240,H=46,P=6;const vs=s.map(p=>p.v),lo=Math.min(...vs),hi=Math.max(...vs),r=hi-lo||1;
+ const pts=s.map((p,i)=>[P+i*(W-2*P)/(s.length-1),H-P-(p.v-lo)/r*(H-2*P)]);
+ return `<svg class="sp" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true"><line x1="${P}" y1="${pts[0][1]}" x2="${W-P}" y2="${pts[0][1]}"/><path d="M${pts.map(p=>p.map(v=>v.toFixed(1)).join(' ')).join(' L')}"/>${pts.map(p=>`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="2.5"/>`).join('')}</svg>`;}
+const LAB={up:'Mejora',dn:'Empeora',eq:'Sin cambio'};
+function renderEvo(){const el=$('#evo');const cs=S.metricas.map(m=>[m,cambio(m)]);
+ if(!cs.some(([,c])=>c)){el.innerHTML='<div class="empty" style="grid-column:1/-1">Con dos registros vas a ver tu evolución.</div>';return;}
+ el.innerHTML=cs.map(([m,c])=>`<div class="card"><h3>${esc(m.nombre)}</h3>${c?`<div class="vals"><span class="big">${fmt(c.b)}</span><span class="from">${esc(m.unidad)} · desde ${fmt(c.a)}</span></div>
+  <span class="chg ${c.mejor}">${LAB[c.mejor]}${c.pct!==null?' · '+(c.d>0?'+':'')+fmt(c.pct)+' %':''}</span>${spark(m)}`:'<p class="note">Faltan datos para comparar.</p>'}</div>`).join('');}
+function renderBar(){const cs=S.metricas.map(cambio).filter(Boolean);
+ $('#st-n b').textContent=S.metricas.length;$('#st-up b').textContent=cs.filter(c=>c.mejor==='up').length;$('#st-dn b').textContent=cs.filter(c=>c.mejor==='dn').length;}
+function renderRep(){const R=regs();const cs=S.metricas.map(m=>[m,cambio(m)]);
+ const top=cs.filter(([,c])=>c&&c.mejor==='up'&&c.pct!==null).sort((a,b)=>Math.abs(b[1].pct)-Math.abs(a[1].pct)).slice(0,3);
+ $('#rep').innerHTML=`<div class="rh"><div><h2 style="font-size:24px">${esc(S.nombre||'Tu nombre')}</h2><div>${esc(S.perfil)} → AI Quality Engineer${S.proyecto?' · '+esc(S.proyecto):''}</div></div><div>${R.length?'Baseline: '+dmy(R[0].fecha)+(R.length>1?' · Último registro: '+dmy(R[R.length-1].fecha):''):''}</div></div>
+ <h3>Baseline contra último registro</h3>${cs.some(([,c])=>c)?`<div style="overflow-x:auto"><table><tr><th>Métrica</th><th>Baseline</th><th>Último</th><th>Cambio</th><th>Lectura</th></tr>${cs.map(([m,c])=>`<tr><td>${esc(m.nombre)}</td><td>${c?fmt(c.a)+' '+esc(m.unidad):'–'}</td><td>${c?fmt(c.b)+' '+esc(m.unidad):'–'}</td><td>${c&&c.pct!==null?(c.d>0?'+':'')+fmt(c.pct)+' %':'–'}</td><td>${c?LAB[c.mejor]:'Faltan datos'}</td></tr>`).join('')}</table></div>`:'<p class="note">Cargá al menos dos registros para comparar.</p>'}
+ ${top.length?`<h3>Lo que más mejoró</h3><p class="note">${top.map(([m,c])=>`${esc(m.nombre)}: de ${fmt(c.a)} a ${fmt(c.b)} ${esc(m.unidad)}`).join(' · ')}.</p>`:''}
+ <h3>Qué cambió en tu forma de trabajar</h3><textarea id="com" aria-label="Qué cambió en tu forma de trabajar" placeholder="Contalo en dos o tres líneas para la demo">${esc(S.comentario)}</textarea>`;
+ $('#com').addEventListener('input',e=>{S.comentario=e.target.value;persist();});}
+function renderMeta(){['nombre','proyecto'].forEach(k=>{const el=$('#m-'+k);if(document.activeElement!==el)el.value=S[k]||'';});$('#m-perfil').value=S.perfil||'QA manual';$('#ex').hidden=!S.ejemplo;}
+function soft(){renderEvo();renderBar();renderRep();}
+function all(){renderMeta();renderMet();renderReg();soft();}
+function touched(){if(S.ejemplo){S.ejemplo=false;$('#ex').hidden=true;}}
+['nombre','proyecto'].forEach(k=>$('#m-'+k).addEventListener('input',e=>{S[k]=e.target.value;touched();renderRep();persist();}));
+$('#m-perfil').addEventListener('change',e=>{S.perfil=e.target.value;touched();renderRep();persist();});
+$('#met').addEventListener('input',e=>{const f=e.target.closest('[data-k]');if(!f)return;const m=S.metricas.find(x=>x.id===f.closest('.row').dataset.id);m[f.dataset.k]=f.value;touched();
+ if(f.dataset.k==='nombre'||f.dataset.k==='unidad'){const a=document.activeElement;renderReg();} soft();persist();});
+$('#met').addEventListener('change',e=>{if(e.target.tagName==='SELECT')soft();});
+$('#met').addEventListener('click',e=>{if(!e.target.closest('[data-del]'))return;const id=e.target.closest('.row').dataset.id;S.metricas=S.metricas.filter(m=>m.id!==id);touched();all();persist();});
+$('#reg').addEventListener('input',e=>{const tr=e.target.closest('tr[data-r]');if(!tr)return;const r=S.registros.find(x=>x.id===tr.dataset.r);
+ if(e.target.matches('[data-f]'))r.fecha=e.target.value; else r.v[e.target.dataset.m]=e.target.value; touched();soft();persist();});
+$('#reg').addEventListener('change',e=>{if(e.target.matches('[data-f]'))renderReg();});
+$('#reg').addEventListener('click',e=>{if(!e.target.closest('[data-delr]'))return;const id=e.target.closest('tr').dataset.r;S.registros=S.registros.filter(r=>r.id!==id);touched();all();persist();});
+$('#add-met').addEventListener('click',()=>{touched();S.metricas.push({id:uid(),nombre:'',unidad:'',sentido:'sube',ref:''});all();persist();$('#met .row:last-child input')?.focus();});
+$('#add-reg').addEventListener('click',()=>{touched();S.registros.push({id:uid(),fecha:new Date().toISOString().slice(0,10),v:{}});all();persist();});
+$('#clear').addEventListener('click',()=>{S=BLANCO();all();persist();});
+$('#print').addEventListener('click',()=>window.print());
+$('#copy').addEventListener('click',async()=>{try{await navigator.clipboard.writeText($('#rep').innerText+'\n'+(S.comentario||''));setSave('Informe copiado');}catch(_){setSave('No se pudo copiar');}});
+S=loadLocal()||JSON.parse(JSON.stringify(EJEMPLO));all();
+(async()=>{try{if(!window.claude||!window.claude.use)return;const [db,user]=await Promise.all([window.claude.use('db'),window.claude.use('user')]);
+ if(!db||!user)return;const id=await user.id();if(!id)return;dbRef=db.collection('data/users/'+id).doc('progreso-qa');
+ const snap=await dbRef.get();if(snap.exists){S=Object.assign(BLANCO(),snap.data());all();setSave('Guardado');}else if(loadLocal()){persist();}}catch(e){dbRef=null;}})();
+})();
+</script>
+</body>
+</html>

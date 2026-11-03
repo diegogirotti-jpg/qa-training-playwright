@@ -1,3 +1,5 @@
+[Entrega del path QA: baseline, reportes y evidencia de QATES](docs/ENTREGA-PATH-QA.md).
+
 ## Diagnóstico y reportes automáticos (entrega del path)
 
 Para ejecutar las dos comprobaciones de bugs conocidos sin cuentas ni secretos, seguí [la guía desde cero](docs/AUTOMATED-BUG-REPORTS.md). Incluye resultados esperados, evidencias, ejecución en PR y la validación pendiente por un compañero.

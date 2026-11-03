@@ -1,0 +1,211 @@
+{
+  "date": "2026-11-03",
+  "testCommit": "c2f7ea58f9ca2e1adf78c90eb5e470f92f1bcf2e",
+  "inventoryCommand": "npx playwright test e2e/toolshop e2e/api --project=chromium --list --reporter=json",
+  "runCommand": "npx playwright test e2e/toolshop/cart.spec.ts e2e/toolshop/search.spec.ts e2e/toolshop/catalog.spec.ts --project=chromium --workers=1 --retries=0 --reporter=json",
+  "stats": {
+    "startTime": "2026-11-03T13:22:50.932Z",
+    "duration": 58414.619,
+    "expected": 9,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "inventory": [
+    {
+      "file": "api/product-search.spec.ts",
+      "title": "Buscar un producto existente por nombre"
+    },
+    {
+      "file": "api/product-search.spec.ts",
+      "title": "Buscar un producto inexistente"
+    },
+    {
+      "file": "toolshop/cart.spec.ts",
+      "title": "Agregar una unidad al carrito"
+    },
+    {
+      "file": "toolshop/cart.spec.ts",
+      "title": "Agregar dos unidades del mismo producto"
+    },
+    {
+      "file": "toolshop/cart.spec.ts",
+      "title": "Agregar dos productos distintos"
+    },
+    {
+      "file": "toolshop/cart.spec.ts",
+      "title": "Cambiar la cantidad desde el carrito"
+    },
+    {
+      "file": "toolshop/cart.spec.ts",
+      "title": "Eliminar un producto del carrito"
+    },
+    {
+      "file": "toolshop/cart.spec.ts",
+      "title": "Eliminar el último producto"
+    },
+    {
+      "file": "toolshop/catalog.spec.ts",
+      "title": "Ordenar productos por precio de menor a mayor"
+    },
+    {
+      "file": "toolshop/login-invalid-password.spec.ts",
+      "title": "Login con una cuenta de prueba separada y una contraseña incorrecta"
+    },
+    {
+      "file": "toolshop/search.spec.ts",
+      "title": "Buscar un producto por nombre"
+    },
+    {
+      "file": "toolshop/search.spec.ts",
+      "title": "Buscar un texto sin coincidencias"
+    }
+  ],
+  "executions": [
+    {
+      "file": "toolshop/cart.spec.ts",
+      "title": "Agregar una unidad al carrito",
+      "tests": [
+        {
+          "status": "expected",
+          "results": [
+            {
+              "status": "passed",
+              "durationMs": 9033,
+              "retry": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "toolshop/cart.spec.ts",
+      "title": "Agregar dos unidades del mismo producto",
+      "tests": [
+        {
+          "status": "expected",
+          "results": [
+            {
+              "status": "passed",
+              "durationMs": 5334,
+              "retry": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "toolshop/cart.spec.ts",
+      "title": "Agregar dos productos distintos",
+      "tests": [
+        {
+          "status": "expected",
+          "results": [
+            {
+              "status": "passed",
+              "durationMs": 8500,
+              "retry": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "toolshop/cart.spec.ts",
+      "title": "Cambiar la cantidad desde el carrito",
+      "tests": [
+        {
+          "status": "expected",
+          "results": [
+            {
+              "status": "passed",
+              "durationMs": 6860,
+              "retry": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "toolshop/cart.spec.ts",
+      "title": "Eliminar un producto del carrito",
+      "tests": [
+        {
+          "status": "expected",
+          "results": [
+            {
+              "status": "passed",
+              "durationMs": 10524,
+              "retry": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "toolshop/cart.spec.ts",
+      "title": "Eliminar el último producto",
+      "tests": [
+        {
+          "status": "expected",
+          "results": [
+            {
+              "status": "passed",
+              "durationMs": 7312,
+              "retry": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "toolshop/catalog.spec.ts",
+      "title": "Ordenar productos por precio de menor a mayor",
+      "tests": [
+        {
+          "status": "expected",
+          "results": [
+            {
+              "status": "passed",
+              "durationMs": 3454,
+              "retry": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "toolshop/search.spec.ts",
+      "title": "Buscar un producto por nombre",
+      "tests": [
+        {
+          "status": "expected",
+          "results": [
+            {
+              "status": "passed",
+              "durationMs": 3056,
+              "retry": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "toolshop/search.spec.ts",
+      "title": "Buscar un texto sin coincidencias",
+      "tests": [
+        {
+          "status": "expected",
+          "results": [
+            {
+              "status": "passed",
+              "durationMs": 2908,
+              "retry": 0
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "scope": "Toolshop normal, Chromium, 1 worker, sin reintentos. Inventario y ejecución son poblaciones distintas."
+}
